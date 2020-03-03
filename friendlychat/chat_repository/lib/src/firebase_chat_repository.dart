@@ -15,14 +15,20 @@ class FirebaseChatRepository implements ChatRepository {
   @override
   Stream<List<Message>> messagesForGroup(String groupId) {
     final group = groupsCollection.document(groupId);
-    return group.collection('messages').snapshots().map((QuerySnapshot doc) =>
-        doc.documents
-            .map((doc) => Message.fromSnapshot(doc.documentID, doc.data)));
+    return group.collection('messages').snapshots().map(
+        (QuerySnapshot snapshot) => snapshot.documents
+            .map((doc) => Message.fromSnapshot(doc.documentID, doc.data))
+            .toList());
   }
 
   @override
   Stream<List<Group>> chatGroups() {
-    // TODO: implement chatGroups
-    return null;
+    print("chatgroups");
+    return groupsCollection.snapshots().map((QuerySnapshot snapshot) {
+      return snapshot.documents.map((DocumentSnapshot doc) {
+        // print((doc.data["participants"].length));
+        return Group.fromSnapshot(doc.documentID, doc.data);
+      }).toList();
+    });
   }
 }

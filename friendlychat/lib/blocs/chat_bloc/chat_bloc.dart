@@ -9,7 +9,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ChatRepository _chatRepository;
   StreamSubscription _chatSubscription;
 
-  ChatBloc(@required ChatRepository chatRepository)
+  ChatBloc({@required ChatRepository chatRepository})
       : assert(chatRepository != null),
         _chatRepository = chatRepository;
 
@@ -21,9 +21,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Stream<ChatState> mapEventToState(ChatEvent event) async* {
     if (event is LoadChatGroups) {
       _chatSubscription?.cancel();
-      _chatSubscription = _chatRepository
-          .chatGroups()
-          .listen((groups) => add(ChatGroupsUpdated(groups)));
+      _chatSubscription = _chatRepository.chatGroups().listen((groups) {
+        add(ChatGroupsUpdated(groups));
+      });
     } else if (event is LoadChat) {
       _chatSubscription?.cancel();
       _chatSubscription = _chatRepository
