@@ -6,15 +6,7 @@ abstract class ChatEvent extends Equatable {
   const ChatEvent();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
-}
-
-class LoadChatGroups extends ChatEvent {}
-
-class ChatGroupsUpdated extends ChatEvent {
-  final List<Group> chatGroups;
-  const ChatGroupsUpdated(this.chatGroups);
 }
 
 class LoadChat extends ChatEvent {
@@ -25,4 +17,10 @@ class LoadChat extends ChatEvent {
 class ChatUpdated extends ChatEvent {
   final List<Message> chatMessages;
   ChatUpdated(this.chatMessages);
+}
+
+class SendChatMessage extends ChatEvent {
+  final Message message;
+  final String groupId;
+  SendChatMessage(this.groupId, this.message);
 }

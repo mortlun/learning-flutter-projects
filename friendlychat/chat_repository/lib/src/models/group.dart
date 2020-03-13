@@ -1,4 +1,6 @@
-class Group {
+import 'package:equatable/equatable.dart';
+
+class Group extends Equatable {
   String id;
   String name;
 
@@ -13,4 +15,8 @@ class Group {
         name = json["name"];
 
   Map<String, dynamic> toJson() => {"name": this.name};
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, name];
 }

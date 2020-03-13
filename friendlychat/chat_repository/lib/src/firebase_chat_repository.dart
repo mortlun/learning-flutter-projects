@@ -8,25 +8,26 @@ class FirebaseChatRepository implements ChatRepository {
   @override
   Future<void> sendMessage(String groupId, Message message) {
     final group = groupsCollection.document(groupId);
-    group.collection('messages').add(message.toJson());
-    return null;
+    return group.collection('messages').add(message.toJson());
   }
 
   @override
   Stream<List<Message>> messagesForGroup(String groupId) {
     final group = groupsCollection.document(groupId);
-    return group.collection('messages').snapshots().map(
-        (QuerySnapshot snapshot) => snapshot.documents
-            .map((doc) => Message.fromSnapshot(doc.documentID, doc.data))
-            .toList());
+    return group
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((QuerySnapshot snapshot) => snapshot.documents.map((doc) {
+              return Message.fromSnapshot(doc.documentID, doc.data);
+            }).toList());
   }
 
   @override
   Stream<List<Group>> chatGroups() {
-    print("chatgroups");
     return groupsCollection.snapshots().map((QuerySnapshot snapshot) {
       return snapshot.documents.map((DocumentSnapshot doc) {
-        // print((doc.data["participants"].length));
+        print(doc.data);
         return Group.fromSnapshot(doc.documentID, doc.data);
       }).toList();
     });

@@ -1,4 +1,4 @@
-package com.example.friendlychat
+package com.shifttrigger.friendlychat
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

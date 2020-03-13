@@ -1,5 +1,7 @@
-import 'models/user.dart';
-
 abstract class UserRepository {
-  Future<User> getUser();
+  Future<bool> isAuthenticated();
+
+  Future<void> authenticate();
+
+  Future<String> getUserId();
 }

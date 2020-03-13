@@ -8,16 +8,13 @@ abstract class ChatState extends Equatable {
   List<Object> get props => [];
 }
 
-class ChatGroupsLoading extends ChatState {}
-
-class ChatGroupsLoaded extends ChatState {
-  final List<Group> loadedGroups;
-  const ChatGroupsLoaded([this.loadedGroups = const []]);
-}
-
 class ChatLoading extends ChatState {}
 
 class ChatLoaded extends ChatState {
   final List<Message> messagesLoaded;
   const ChatLoaded([this.messagesLoaded = const []]);
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [messagesLoaded];
 }
