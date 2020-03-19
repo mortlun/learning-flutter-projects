@@ -9,6 +9,7 @@ import 'package:friendlychat/blocs/chat_bloc/chat_bloc.dart';
 import 'package:friendlychat/blocs/chat_groups_bloc/chat_groups_bloc.dart';
 import 'package:friendlychat/widgets/ChatMessage.dart';
 import 'package:friendlychat/widgets/ChatMessageWIthAnimation.dart';
+import 'package:friendlychat/widgets/Triangle.dart';
 
 class ChatScreen extends StatefulWidget {
   final Group group;
@@ -51,6 +52,25 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   reverse: true,
                   itemBuilder: (_, int index) {
                     final message = messages[index];
+                    print('index $index');
+                    print('Length ${messages.length}');
+                    // if (index == 0) {
+                    //   print("YES");
+                    //   var msg = ChatMessageWithAnimation(
+                    //     child: ChatMessage(
+                    //       message: message,
+                    //       userId: authState is AuthAuthenticated
+                    //           ? authState.userId
+                    //           : null,
+                    //     ),
+                    //     animationController: new AnimationController(
+                    //         vsync: this,
+                    //         duration: new Duration(milliseconds: 700)),
+                    //   );
+                    //   msg.animationController.forward();
+                    //   return msg;
+                    // }
+
                     return ChatMessage(
                       message: message,
                       userId: authState is AuthAuthenticated
@@ -140,15 +160,15 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _handleSubmitted(String value) {
     _textController.clear();
-    ChatMessageWithAnimation message = new ChatMessageWithAnimation(
-      text: value,
-      animationController: new AnimationController(
-          vsync: this, duration: new Duration(milliseconds: 700)),
-    );
     setState(() {
       _isComposing = false;
     });
-    message.animationController.forward();
+    // ChatMessageWithAnimation message = new ChatMessageWithAnimation(
+    //   text: value,
+    //   animationController: new AnimationController(
+    //       vsync: this, duration: new Duration(milliseconds: 700)),
+    // );
+    // message.animationController.forward();
   }
 
   @override

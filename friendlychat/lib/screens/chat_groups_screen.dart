@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:friendlychat/blocs/chat_bloc/bloc.dart';
 import 'package:friendlychat/blocs/chat_groups_bloc/chat_groups_bloc.dart';
 import 'package:friendlychat/blocs/chat_groups_bloc/chat_groups_state.dart';
+import 'package:friendlychat/widgets/Triangle.dart';
 import 'chat_screen.dart';
 
 class ChatGroupsScreen extends StatelessWidget {
@@ -39,6 +40,16 @@ class ChatGroupsScreen extends StatelessWidget {
             context: context,
             tiles: tiles,
           ).toList();
+
+          // return Center(
+          //   child: Container(
+          //     child: CustomPaint(
+          //       painter: Triangle(),
+          //       size: Size(400, 400),
+          //     ),
+          //     color: Colors.blue,
+          //   ),
+          // );
           return ListView(
             children: divided,
           );
