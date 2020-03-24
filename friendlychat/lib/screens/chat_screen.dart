@@ -27,6 +27,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       new TextEditingController(); //new
   final List<ChatMessageWithAnimation> _messages = <ChatMessageWithAnimation>[];
   bool _isComposing = false; //new
+  List<Message> messages;
+  List<Message> listToAnimate = [];
+  int previousListSize;
+  bool animatedStarted = false;
+  List<ChatMessageWithAnimation> controllers = [];
+  List<ChatMessageWithAnimation> controllersStack = [];
 
   @override
   Widget build(BuildContext context) {
@@ -43,33 +49,117 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         ),
         body: BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
           if (state is ChatLoaded) {
-            final messages = state.messagesLoaded;
+            final stateMessages = state.messagesLoaded;
+            print(stateMessages.length);
+            if (messages == null) {
+              messages = state.messagesLoaded.map((item) => item).toList();
+            }
+            //final messages = state.messagesLoaded;
+
+            if (previousListSize == null) {
+              previousListSize = stateMessages.length;
+            }
+
+            if (previousListSize != stateMessages.length) {
+              var diff = stateMessages.length - previousListSize;
+              listToAnimate.addAll(stateMessages.getRange(0, diff));
+              previousListSize = stateMessages.length;
+            }
+
+            print("list to animate: ${listToAnimate.length}");
+
             return Container(
               child: BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, authState) {
+                if (listToAnimate.length > 0) {
+                  var newMessages = listToAnimate.map((message) {
+                    return ChatMessageWithAnimation(
+                        child: ChatMessage(
+                          message: message,
+                          userId: authState is AuthAuthenticated
+                              ? authState.userId
+                              : null,
+                        ),
+                        animationController: AnimationController(
+                            vsync: this,
+                            duration: new Duration(milliseconds: 5000)));
+                  });
+                  controllers.addAll(newMessages);
+                  controllersStack.addAll(controllers);
+
+                  List<ChatMessageWithAnimation> temp = newMessages.toList();
+
+                  listToAnimate.clear();
+
+                  print("before" + "-" * 10);
+                  print("list to animate: ${listToAnimate.length}");
+                  print("controllers: ${controllers.length}");
+                  print("controllersStack:: ${controllersStack.length}");
+                  print("Temp:: ${temp.length}");
+
+                  print("-" * 10);
+
+                  for (var controller in temp) {
+                    print("for loop");
+                    controller.animationController.addStatusListener((status) {
+                      if (status == AnimationStatus.completed) {
+                        print("done");
+                        controllersStack.removeAt(0);
+                        if (controllersStack.length != 0) {
+                          controllersStack[0].animationController.forward();
+                        } else {
+                          animatedStarted = false;
+                          print(
+                              "list to animate, all done: ${listToAnimate.length}");
+                          print("controllers, all done: ${controllers.length}");
+                          print(
+                              "controllersStack, all done: ${controllersStack.length}");
+                        }
+                      }
+                    });
+                  }
+
+                  if (!animatedStarted) {
+                    print("animating");
+                    controllersStack[0].animationController.forward();
+                  }
+
+                  // for (var i = 0; i < controllers.length; i++) {
+                  //   controllers[i]
+                  //       .animationController
+                  //       .addStatusListener((status) {
+                  //     if (status == AnimationStatus.completed) {
+                  //       print("Done");
+
+                  //       if ((i + 1) != controllers.length) {
+                  //         print("started $i");
+                  //         controllers[i + 1].animationController.forward();
+                  //         listToAnimate.removeAt(0);
+                  //       } else {
+                  //         //listToAnimate.clear();
+                  //         listToAnimate.removeAt(0);
+
+                  //         animatedStarted = false;
+                  //         print(
+                  //             "list to animate, all done: ${listToAnimate.length}");
+                  //         print("controllers, all done: ${controllers.length}");
+                  //       }
+                  //     }
+                  //   });
+                  // }
+
+                  //controllers[0].animationController.forward();
+                }
                 final listBuilder = ListView.builder(
                   padding: new EdgeInsets.all(8),
                   reverse: true,
                   itemBuilder: (_, int index) {
-                    final message = messages[index];
-                    print('index $index');
-                    print('Length ${messages.length}');
-                    // if (index == 0) {
-                    //   print("YES");
-                    //   var msg = ChatMessageWithAnimation(
-                    //     child: ChatMessage(
-                    //       message: message,
-                    //       userId: authState is AuthAuthenticated
-                    //           ? authState.userId
-                    //           : null,
-                    //     ),
-                    //     animationController: new AnimationController(
-                    //         vsync: this,
-                    //         duration: new Duration(milliseconds: 700)),
-                    //   );
-                    //   msg.animationController.forward();
-                    //   return msg;
-                    // }
+                    //print("index $index");
+
+                    if (index < controllers.length && controllers.length > 0) {
+                      return controllers[controllers.length - 1 - index];
+                    }
+                    final message = messages[index - controllers.length];
 
                     return ChatMessage(
                       message: message,
@@ -78,7 +168,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           : null,
                     );
                   },
-                  itemCount: messages.length,
+                  itemCount: messages.length + controllers.length,
                 );
 
                 return Column(

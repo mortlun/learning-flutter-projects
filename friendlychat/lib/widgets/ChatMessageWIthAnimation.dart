@@ -2,9 +2,8 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/widgets.dart';
 
 class ChatMessageWithAnimation extends StatelessWidget {
-  ChatMessageWithAnimation({this.child, this.text, this.animationController});
+  ChatMessageWithAnimation({this.child, this.animationController});
 
-  final String text;
   final AnimationController animationController;
   final Widget child;
   @override
