@@ -416,13 +416,13 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "integration_test_app",
+      "name": "testing_app",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-03-25T09:45:31.089474Z",
+  "generated": "2020-03-25T10:17:58.780581Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }
