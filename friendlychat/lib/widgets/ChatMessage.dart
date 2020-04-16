@@ -3,6 +3,7 @@ import 'package:chat_repository/chat_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:friendlychat/widgets/Triangle.dart';
+import 'package:intl/intl.dart'; //for date format
 
 class ChatMessage extends StatelessWidget {
   final Message message;
@@ -23,17 +24,24 @@ class ChatMessage extends StatelessWidget {
     );
 
     final _size = MediaQuery.of(context).size;
-    final chatBubble = new Container(
-      constraints: BoxConstraints(maxWidth: (_size.width / 3) * 2),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: new Text(
-        message.content,
-        style: TextStyle(color: senderSameAsUser ? Colors.white : Colors.black),
-      ),
-      decoration: BoxDecoration(
-          color: senderSameAsUser ? Colors.blue[300] : Colors.grey[200],
-          borderRadius: BorderRadius.all(Radius.circular(25))),
-    );
+    final chatBubble = new Tooltip(
+        message: message.timestamp != null
+            ? new DateFormat.yMMMMd().add_Hm().format(message.timestamp)
+            : "timestamp not set",
+        verticalOffset: 20,
+        preferBelow: false,
+        child: Container(
+          constraints: BoxConstraints(maxWidth: (_size.width / 3) * 2),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: new Text(
+            message.content,
+            style: TextStyle(
+                color: senderSameAsUser ? Colors.white : Colors.black),
+          ),
+          decoration: BoxDecoration(
+              color: senderSameAsUser ? Colors.blue[300] : Colors.grey[200],
+              borderRadius: BorderRadius.all(Radius.circular(25))),
+        ));
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -47,10 +55,6 @@ class ChatMessage extends StatelessWidget {
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                " message.timestamp.toLocal().toString()",
-                style: Theme.of(context).textTheme.caption,
-              ),
               chatBubble,
             ],
           ),

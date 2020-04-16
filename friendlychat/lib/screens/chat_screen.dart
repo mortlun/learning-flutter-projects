@@ -10,6 +10,9 @@ import 'package:friendlychat/blocs/chat_groups_bloc/chat_groups_bloc.dart';
 import 'package:friendlychat/widgets/ChatMessage.dart';
 import 'package:friendlychat/widgets/ChatMessageWIthAnimation.dart';
 import 'package:friendlychat/widgets/Triangle.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friendlychat/generated/l10n.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final Group group;
@@ -40,7 +43,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     final ChatGroupsBloc chatGroupsBloc =
         BlocProvider.of<ChatGroupsBloc>(context);
-
+    print(Intl.getCurrentLocale());
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(widget.group.name),
@@ -54,8 +57,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             if (messages == null) {
               messages = state.messagesLoaded.map((item) => item).toList();
             }
-            //final messages = state.messagesLoaded;
-
             if (previousListSize == null) {
               previousListSize = stateMessages.length;
             }
@@ -82,30 +83,25 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         ),
                         animationController: AnimationController(
                             vsync: this,
-                            duration: new Duration(milliseconds: 5000)));
+                            duration: new Duration(milliseconds: 1000)));
                   });
+                  int controllersPrevLenght = controllers.length;
                   controllers.addAll(newMessages);
-                  controllersStack.addAll(controllers);
+                  int controllerStackPrevLength = controllersStack.length;
 
-                  List<ChatMessageWithAnimation> temp = newMessages.toList();
-
-                  listToAnimate.clear();
-
-                  print("before" + "-" * 10);
-                  print("list to animate: ${listToAnimate.length}");
-                  print("controllers: ${controllers.length}");
-                  print("controllersStack:: ${controllersStack.length}");
-                  print("Temp:: ${temp.length}");
-
-                  print("-" * 10);
-
-                  for (var controller in temp) {
-                    print("for loop");
-                    controller.animationController.addStatusListener((status) {
+                  controllersStack
+                      .addAll(controllers.sublist(controllersPrevLenght));
+                  for (var i = controllerStackPrevLength;
+                      i < controllersStack.length;
+                      i++) {
+                    controllersStack[i]
+                        .animationController
+                        .addStatusListener((status) {
                       if (status == AnimationStatus.completed) {
-                        print("done");
+                        print("One Animation item is done.");
                         controllersStack.removeAt(0);
                         if (controllersStack.length != 0) {
+                          print("Started next animation item.");
                           controllersStack[0].animationController.forward();
                         } else {
                           animatedStarted = false;
@@ -119,48 +115,29 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     });
                   }
 
+                  listToAnimate.clear();
+
+                  print("before" + "-" * 10);
+                  print("list to animate: ${listToAnimate.length}");
+                  print("controllers: ${controllers.length}");
+                  print("controllersStack:: ${controllersStack.length}");
+                  print("-" * 10);
+
                   if (!animatedStarted) {
                     print("animating");
                     controllersStack[0].animationController.forward();
+                    animatedStarted = true;
                   }
-
-                  // for (var i = 0; i < controllers.length; i++) {
-                  //   controllers[i]
-                  //       .animationController
-                  //       .addStatusListener((status) {
-                  //     if (status == AnimationStatus.completed) {
-                  //       print("Done");
-
-                  //       if ((i + 1) != controllers.length) {
-                  //         print("started $i");
-                  //         controllers[i + 1].animationController.forward();
-                  //         listToAnimate.removeAt(0);
-                  //       } else {
-                  //         //listToAnimate.clear();
-                  //         listToAnimate.removeAt(0);
-
-                  //         animatedStarted = false;
-                  //         print(
-                  //             "list to animate, all done: ${listToAnimate.length}");
-                  //         print("controllers, all done: ${controllers.length}");
-                  //       }
-                  //     }
-                  //   });
-                  // }
-
-                  //controllers[0].animationController.forward();
                 }
+
                 final listBuilder = ListView.builder(
                   padding: new EdgeInsets.all(8),
                   reverse: true,
                   itemBuilder: (_, int index) {
-                    //print("index $index");
-
                     if (index < controllers.length && controllers.length > 0) {
-                      return controllers[controllers.length - 1 - index];
+                      return controllers[controllers.length - index - 1];
                     }
                     final message = messages[index - controllers.length];
-
                     return ChatMessage(
                       message: message,
                       userId: authState is AuthAuthenticated
@@ -200,7 +177,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Widget _buildTextComposer(String senderId) {
     final ChatBloc chatBloc = BlocProvider.of<ChatBloc>(context);
-
     return new Container(
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: new Row(
@@ -214,8 +190,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     _isComposing = text.length > 0;
                   });
                 },
-                decoration:
-                    new InputDecoration.collapsed(hintText: "Send a message"),
+                decoration: new InputDecoration.collapsed(
+                    hintText: S.of(context).sendMessage),
               ),
             ),
             new Container(
@@ -253,12 +229,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _isComposing = false;
     });
-    // ChatMessageWithAnimation message = new ChatMessageWithAnimation(
-    //   text: value,
-    //   animationController: new AnimationController(
-    //       vsync: this, duration: new Duration(milliseconds: 700)),
-    // );
-    // message.animationController.forward();
   }
 
   @override

@@ -10,7 +10,7 @@ class ChatMessageWithAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     return new SizeTransition(
         sizeFactor: new CurvedAnimation(
-            parent: animationController, curve: Curves.easeOut),
+            parent: animationController, curve: Curves.fastLinearToSlowEaseIn),
         child: this.child);
   }
 }

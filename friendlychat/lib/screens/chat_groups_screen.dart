@@ -18,8 +18,10 @@ class ChatGroupsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Groups"),
       ),
-      body: BlocBuilder<ChatGroupsBloc, ChatGroupsState>(
-          builder: (context, state) {
+      body: BlocBuilder<ChatGroupsBloc, ChatGroupsState>(builder: (
+        context,
+        state,
+      ) {
         if (state is ChatGroupsLoading) {
           return loadingIndicator;
         }
@@ -28,11 +30,12 @@ class ChatGroupsScreen extends StatelessWidget {
                 onTap: () {
                   BlocProvider.of<ChatBloc>(context).add(LoadChat(group));
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ChatScreen(
-                                group: group,
-                              )));
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChatScreen(
+                              group: group,
+                            )),
+                  );
                 },
                 title: Text(group.name),
               ));

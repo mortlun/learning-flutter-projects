@@ -14,6 +14,8 @@ import 'package:friendlychat/screens/chat_groups_screen.dart';
 import 'package:user_repository/user_repository.dart';
 
 import 'blocs/chat_groups_bloc/chat_groups_event.dart'; //new
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart';
 
 final ThemeData kIOSTheme = new ThemeData(
   primarySwatch: Colors.orange,
@@ -51,6 +53,13 @@ class FriendlychatApp extends StatelessWidget {
         })
       ],
       child: new MaterialApp(
+        localizationsDelegates: [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        supportedLocales: S.delegate.supportedLocales,
         theme: defaultTargetPlatform == TargetPlatform.iOS
             ? kIOSTheme
             : kDefaultTheme,
